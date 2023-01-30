@@ -101,7 +101,6 @@ export const findUserById = expressAsyncHandler((req, res) => __awaiter(void 0, 
 export const findAllUsers = expressAsyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const users = yield UserModel.find().select("-password");
-        console.log(req.user);
         res.status(200).json(users);
     }
     catch (error) {
@@ -140,9 +139,54 @@ export const deleteUser = expressAsyncHandler((req, res) => __awaiter(void 0, vo
 //Add a friend
 export const addFriend = expressAsyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { friendId } = req.body;
-        const updatedUser = yield UserModel.updateOne({ _id: req.user }, { $push: { friends: friendId } });
-        res.status(200).json(updatedUser);
+        const friendId = req.params.id;
+        const friendExists = yield UserModel.findOne({ _id: req.user });
+        friendExists === null || friendExists === void 0 ? void 0 : friendExists.friends.find((el) => {
+            if (el.toString() === friendId) {
+                res.status(400);
+                throw new Error("Friend already exist");
+            }
+        });
+        yield UserModel.updateOne({ _id: req.user }, { $push: { friends: friendId } });
+        res.status(200).json("Friend added successfully!");
+    }
+    catch (error) {
+        res.status(400);
+        throw new Error(error);
+    }
+}));
+//Delete a friend
+export const deleteFriend = expressAsyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const friendId = req.params.id;
+        yield UserModel.updateOne({ _id: req.user }, { $pull: { friends: friendId } });
+        res.status(202).json("Friend deleted successfully!");
+    }
+    catch (error) {
+        res.status(400);
+        throw new Error(error);
+    }
+}));
+//Get All friends of certain User[ID]
+export const getFriends = expressAsyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const friends = yield UserModel.find({
+            _id: (_a = req.user) === null || _a === void 0 ? void 0 : _a.toString(),
+        }).select("friends");
+        res.status(200).json(friends);
+    }
+    catch (error) {
+        res.status(400);
+        throw new Error(error);
+    }
+}));
+//Get friends by [ID]
+export const getFriendById = expressAsyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const id = req.params.id;
+        const userFriends = yield UserModel.findById(id).select("friends");
+        res.status(200).json(userFriends);
     }
     catch (error) {
         res.status(400);

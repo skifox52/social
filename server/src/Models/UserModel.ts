@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose"
 
-interface User {
+export interface User {
   name: string
   password: string
   mail: string
@@ -29,6 +29,7 @@ const UserSchema = new Schema<User>({
   friends: [
     {
       type: Schema.Types.ObjectId,
+      unique: true,
       ref: "User",
     },
   ],

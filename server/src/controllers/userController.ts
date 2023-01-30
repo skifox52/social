@@ -112,7 +112,6 @@ export const findAllUsers = expressAsyncHandler(
   async (req: Request, res: Response) => {
     try {
       const users = await UserModel.find().select("-password")
-      console.log(req.user)
       res.status(200).json(users)
     } catch (error: any) {
       res.status(400)
@@ -163,12 +162,68 @@ export const deleteUser = expressAsyncHandler(
 export const addFriend = expressAsyncHandler(
   async (req: Request, res: Response) => {
     try {
-      const { friendId } = req.body
-      const updatedUser = await UserModel.updateOne(
+      const friendId = req.params.id
+      const friendExists = await UserModel.findOne({ _id: req.user })
+      friendExists?.friends.find((el) => {
+        if (el.toString() === friendId) {
+          res.status(400)
+          throw new Error("Friend already exist")
+        }
+      })
+      await UserModel.updateOne(
         { _id: req.user },
         { $push: { friends: friendId } }
       )
-      res.status(200).json(updatedUser)
+      res.status(200).json("Friend added successfully!")
+    } catch (error: any) {
+      res.status(400)
+      throw new Error(error)
+    }
+  }
+)
+
+//Delete a friend
+
+export const deleteFriend = expressAsyncHandler(
+  async (req: Request, res: Response) => {
+    try {
+      const friendId = req.params.id
+      await UserModel.updateOne(
+        { _id: req.user },
+        { $pull: { friends: friendId } }
+      )
+      res.status(202).json("Friend deleted successfully!")
+    } catch (error: any) {
+      res.status(400)
+      throw new Error(error)
+    }
+  }
+)
+
+//Get All friends of certain User[ID]
+
+export const getFriends = expressAsyncHandler(
+  async (req: Request, res: Response) => {
+    try {
+      const friends = await UserModel.find({
+        _id: req.user?.toString(),
+      }).select("friends")
+      res.status(200).json(friends)
+    } catch (error: any) {
+      res.status(400)
+      throw new Error(error)
+    }
+  }
+)
+
+//Get friends by [ID]
+
+export const getFriendById = expressAsyncHandler(
+  async (req: Request, res: Response) => {
+    try {
+      const id = req.params.id
+      const userFriends = await UserModel.findById(id).select("friends")
+      res.status(200).json(userFriends)
     } catch (error: any) {
       res.status(400)
       throw new Error(error)

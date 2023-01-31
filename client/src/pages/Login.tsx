@@ -1,15 +1,21 @@
-import React, { useState } from "react"
+import { ChangeEvent, FormEvent, useState } from "react"
 
 const Login = () => {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    console.log("Email:", email)
-    console.log("Password:", password)
+  const [loginData, setLoginData] = useState({
+    email: "",
+    password: "",
+  })
+  const onChange = (e: any) => {
+    setLoginData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }))
   }
 
+  const handleSubmit = (event: FormEvent) => {
+    event.preventDefault()
+  }
+  console.log(loginData)
   return (
     <div className="flex justify-center w-screen">
       <form
@@ -26,9 +32,9 @@ const Login = () => {
           </label>
           <input
             type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            name="email"
+            value={loginData.email}
+            onChange={onChange}
             className="border border-gray-400 p-2 w-full"
           />
         </div>
@@ -41,9 +47,9 @@ const Login = () => {
           </label>
           <input
             type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            name="password"
+            value={loginData.password}
+            onChange={onChange}
             className="border border-gray-400 p-2 w-full"
           />
         </div>

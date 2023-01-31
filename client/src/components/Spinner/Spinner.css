@@ -1,0 +1,23 @@
+@keyframes loader-rotate {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.loader {
+  position: relative;
+  border-right-color: transparent;
+  animation: loader-rotate 1s linear infinite;
+}
+.loader::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  height: 50%;
+  width: 50%;
+  background: rgb(226 232 240);
+  transform: translate(-50%, -50%);
+}

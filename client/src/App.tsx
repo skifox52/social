@@ -3,6 +3,7 @@ import { Routes, Route, useLocation, Navigate } from "react-router-dom"
 import Login from "./pages/Login"
 import NotFound from "./pages/Notfound"
 import Register from "./pages/Register"
+import Spinner from "./components/Spinner/Spinner"
 
 function App() {
   const location = useLocation()

@@ -128,6 +128,11 @@ export const putUser = expressAsyncHandler((req, res) => __awaiter(void 0, void 
 export const deleteUser = expressAsyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userId = req.params.Id;
+        const userExists = yield UserModel.findById(userId);
+        if (!userExists) {
+            res.status(400);
+            throw new Error("User doesn't elxist!");
+        }
         yield UserModel.findByIdAndDelete(userId);
         res.status(202).json("User deleted Successfully");
     }

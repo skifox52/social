@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import expressAsyncHandler from "express-async-handler";
 import PostModel from "../Models/PostModel.js";
+import UserModel from "../Models/UserModel.js";
 //Get all posts
 export const getPosts = expressAsyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -75,6 +76,20 @@ export const updatePost = expressAsyncHandler((req, res) => __awaiter(void 0, vo
         }
         yield PostModel.findByIdAndUpdate(id, req.body);
         res.status(200).json(`User ${id} has been updated successfully!`);
+    }
+    catch (error) {
+        res.status(400);
+        throw new Error(error);
+    }
+}));
+//Get posts of friends
+export const getPostsByFriends = expressAsyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const friends = yield UserModel.findById(req.user).select("friends");
+        const friendsId = friends === null || friends === void 0 ? void 0 : friends.friends.map((fr) => fr.toString());
+        const postsPromise = yield (friendsId === null || friendsId === void 0 ? void 0 : friendsId.map((id) => PostModel.find({ author: id })));
+        const postArray = yield Promise.all(postsPromise);
+        res.status(200).json(postArray);
     }
     catch (error) {
         res.status(400);

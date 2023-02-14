@@ -148,6 +148,11 @@ export const deleteUser = expressAsyncHandler(
   async (req: Request, res: Response) => {
     try {
       const userId = req.params.Id
+      const userExists = await UserModel.findById(userId)
+      if (!userExists) {
+        res.status(400)
+        throw new Error("User doesn't elxist!")
+      }
       await UserModel.findByIdAndDelete(userId)
       res.status(202).json("User deleted Successfully")
     } catch (error: any) {

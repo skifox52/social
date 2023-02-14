@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose"
 import { User } from "./UserModel"
 
-interface Post {
+export interface Post {
   title: string
   content: string
   author: User

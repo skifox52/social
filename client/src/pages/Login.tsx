@@ -15,7 +15,6 @@ const Login = () => {
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
   }
-  console.log(loginData)
   return (
     <div className="flex justify-center w-screen">
       <form

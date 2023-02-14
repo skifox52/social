@@ -1,7 +1,7 @@
 import expressAsyncHandler from "express-async-handler"
 import { Request, Response } from "express"
 import PostModel from "../Models/PostModel.js"
-import { readdirSync } from "fs"
+import UserModel from "../Models/UserModel.js"
 
 //Get all posts
 export const getPosts = expressAsyncHandler(
@@ -82,6 +82,25 @@ export const updatePost = expressAsyncHandler(
       }
       await PostModel.findByIdAndUpdate(id, req.body)
       res.status(200).json(`User ${id} has been updated successfully!`)
+    } catch (error: any) {
+      res.status(400)
+      throw new Error(error)
+    }
+  }
+)
+
+//Get posts of friends
+
+export const getPostsByFriends = expressAsyncHandler(
+  async (req: Request, res: Response) => {
+    try {
+      const friends = await UserModel.findById(req.user).select("friends")
+      const friendsId = friends?.friends.map((fr) => fr.toString())
+      const postsPromise: any = await friendsId?.map((id) =>
+        PostModel.find({ author: id })
+      )
+      const postArray = await Promise.all(postsPromise)
+      res.status(200).json(postArray)
     } catch (error: any) {
       res.status(400)
       throw new Error(error)
